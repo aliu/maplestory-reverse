@@ -1,0 +1,5 @@
+/wasm/target
+/wasm/Cargo.lock
+
+/node_modules
+/public
