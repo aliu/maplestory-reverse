@@ -1,12 +1,12 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 module.exports = {
   entry: './bootstrap.js',
   output: {
-    filename: '[name].[contenthash].js',
+    filename: 'bundle.js',
     path: path.resolve(__dirname, 'public'),
   },
   resolve: {
@@ -16,7 +16,13 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({ template: 'index.html' }),
+    new CopyPlugin({
+      patterns: [
+        'index.html',
+        'style.css',
+        { from: 'src/assets', to: 'assets' },
+      ],
+    }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, 'wasm'),
       // https://github.com/wasm-tool/wasm-pack-plugin/issues/93
