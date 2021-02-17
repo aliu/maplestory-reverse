@@ -43,8 +43,10 @@ export class Game {
     if (move !== undefined) {
       flipped.push(...this.flipped(move));
       this.set(move.row, move.col, this.player);
-      for (const { row, col } of flipped) {
-        this.set(row, col, this.player);
+      for (const group of flipped) {
+        for (const { row, col } of group) {
+          this.set(row, col, this.player);
+        }
       }
     }
     [this.player, this.opponent] = [this.opponent, this.player];
@@ -73,7 +75,14 @@ export class Game {
       }
 
       if (current.length > 0 && this.get(row, col) === this.player) {
-        flipped.push(...current);
+        // store the flipped positions in groups of increasing distance from
+        // the original move, so we can animate them in the same order later
+        for (let i = 0; i < current.length; i++) {
+          if (i === flipped.length) {
+            flipped.push([]);
+          }
+          flipped[i].push(current[i]);
+        }
       }
     }
     return flipped;

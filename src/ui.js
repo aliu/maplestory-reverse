@@ -9,6 +9,10 @@ const textures = {
   bean: [sheet.textures.bean],
   hole: [sheet.textures.hole],
   guide: frames(sheet.animations.guide, 210),
+  drop_slime: frames(sheet.animations.drop_slime, 120),
+  drop_bean: frames(sheet.animations.drop_bean, 120),
+  reverse_slime: frames(sheet.animations.reverse_slime, 120),
+  reverse_bean: frames(sheet.animations.reverse_bean, 120),
 };
 
 function frames(animation, time) {
@@ -76,6 +80,28 @@ class Tile extends PIXI.AnimatedSprite {
   guide() {
     this.textures = textures.guide;
     this.loop = true;
+    this.play();
+  }
+
+  drop(id) {
+    this.textures =
+      id === constants.SLIME ? textures.drop_slime : textures.drop_bean;
+    this.loop = false;
+    this.onComplete = function () {
+      this.onComplete = null;
+      this.set(id);
+    };
+    this.play();
+  }
+
+  reverse(id) {
+    this.textures =
+      id === constants.SLIME ? textures.reverse_slime : textures.reverse_bean;
+    this.loop = false;
+    this.onComplete = function () {
+      this.onComplete = null;
+      this.set(id);
+    };
     this.play();
   }
 }

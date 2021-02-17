@@ -26,8 +26,9 @@ start.onclick = async function () {
   const slimePlayer = players[slime.selectedIndex];
   const beanPlayer = players[bean.selectedIndex];
 
+  let animation = Promise.resolve();
+
   while (true) {
-    const player = game.player === constants.SLIME ? slimePlayer : beanPlayer;
     info.textContent = `${name(game.player)}'s turn.`;
 
     let moves = game.moves();
@@ -48,6 +49,10 @@ start.onclick = async function () {
     for (const { row, col } of moves) {
       ui.tiles[row][col].guide();
     }
+    // wait for tiles to finish animating
+    await animation;
+
+    const player = game.player === constants.SLIME ? slimePlayer : beanPlayer;
     const id = game.player;
     const move = await player.move({
       moves,
@@ -60,17 +65,27 @@ start.onclick = async function () {
       );
     }
     const flipped = game.move(move);
+
     // hide guide tiles
     for (const { row, col } of moves) {
       ui.tiles[row][col].set(constants.EMPTY);
     }
-    // update flipped tiles
-    ui.tiles[move.row][move.col].set(id);
-    for (const { row, col } of flipped) {
-      ui.tiles[row][col].set(id);
-    }
+    // animate player move
+    ui.tiles[move.row][move.col].drop(id);
+    // animate flipped tiles
+    animation = (async function () {
+      for (const group of flipped) {
+        for (const { row, col } of group) {
+          ui.tiles[row][col].reverse(id);
+        }
+        await sleep(150);
+      }
+      await sleep(400);
+    })();
   }
 
+  // wait for any currently executing animations to finish
+  await animation;
   await sleep(1000);
   reset();
 };
