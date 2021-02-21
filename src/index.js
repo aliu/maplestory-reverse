@@ -13,13 +13,20 @@ const info = document.getElementById('info');
 
 let started = false;
 
-createDropdown(slime);
-createDropdown(bean);
-reset();
+load();
 
-ui.events.addEventListener('move', input);
+async function load() {
+  createDropdown(slime);
+  createDropdown(bean);
 
-start.onclick = async function () {
+  await ui.load();
+
+  reset();
+  ui.events.addEventListener('move', input);
+  start.onclick = play;
+}
+
+async function play() {
   if (started) return;
   started = start.disabled = slime.disabled = bean.disabled = true;
 
@@ -55,6 +62,7 @@ start.onclick = async function () {
     const player = game.player === constants.SLIME ? slimePlayer : beanPlayer;
     const id = game.player;
     const move = await player.move({
+      id,
       moves,
       board: game.board(),
       events: ui.events,
@@ -73,7 +81,7 @@ start.onclick = async function () {
     // animate player move
     ui.tiles[move.row][move.col].drop(id);
     // animate flipped tiles
-    animation = (async function () {
+    animation = (async () => {
       for (const group of flipped) {
         for (const { row, col } of group) {
           ui.tiles[row][col].reverse(id);
@@ -88,7 +96,7 @@ start.onclick = async function () {
   await animation;
   await sleep(1000);
   reset();
-};
+}
 
 function reset() {
   started = start.disabled = slime.disabled = bean.disabled = false;
@@ -105,7 +113,7 @@ function reset() {
 function input(event) {
   const { row, col } = event.detail;
   if (!started) {
-    // toggle walls
+    // toggle holes
     switch (game.get(row, col)) {
       case constants.EMPTY:
         game.set(row, col, constants.HOLE);

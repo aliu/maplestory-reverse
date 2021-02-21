@@ -1,19 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as constants from './constants.js';
 
-const sheet = PIXI.Loader.shared.resources.assets.spritesheet;
-
-const textures = {
-  empty: [PIXI.Texture.EMPTY],
-  slime: [sheet.textures.slime],
-  bean: [sheet.textures.bean],
-  hole: [sheet.textures.hole],
-  guide: frames(sheet.animations.guide, 210),
-  drop_slime: frames(sheet.animations.drop_slime, 120),
-  drop_bean: frames(sheet.animations.drop_bean, 120),
-  reverse_slime: frames(sheet.animations.reverse_slime, 120),
-  reverse_bean: frames(sheet.animations.reverse_bean, 120),
-};
+const sprites = 'assets/spritesheet.json';
 
 function frames(animation, time) {
   return animation.map((texture) => ({ texture, time }));
@@ -30,13 +18,31 @@ export class Board {
       view: canvas,
       transparent: true,
     });
+  }
+
+  async load() {
+    await new Promise((resolve) => this.app.loader.add(sprites).load(resolve));
+
+    const sheet = this.app.loader.resources[sprites].spritesheet;
+    const animations = {
+      empty: [PIXI.Texture.EMPTY],
+      slime: [sheet.textures.slime],
+      bean: [sheet.textures.bean],
+      hole: [sheet.textures.hole],
+      guide: frames(sheet.animations.guide, 210),
+      drop_slime: frames(sheet.animations.drop_slime, 120),
+      drop_bean: frames(sheet.animations.drop_bean, 120),
+      reverse_slime: frames(sheet.animations.reverse_slime, 120),
+      reverse_bean: frames(sheet.animations.reverse_bean, 120),
+    };
+
     this.app.stage.addChild(new PIXI.Sprite(sheet.textures.background));
 
     const container = new PIXI.Container();
     container.position.set(7, 8);
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        const tile = new Tile(sheet);
+        const tile = new Tile(animations);
         tile.position.set(col * 40, row * 40);
         tile.interactive = true;
         tile.on('pointertap', () => {
@@ -52,8 +58,9 @@ export class Board {
 }
 
 class Tile extends PIXI.AnimatedSprite {
-  constructor() {
-    super(textures.empty);
+  constructor(animations) {
+    super(animations.empty);
+    this.animations = animations;
     this.updateAnchor = true;
     this.loop = false;
     this.hitArea = new PIXI.Rectangle(0, 0, 40, 40);
@@ -63,31 +70,33 @@ class Tile extends PIXI.AnimatedSprite {
     this.loop = false;
     switch (id) {
       case constants.EMPTY:
-        this.textures = textures.empty;
+        this.textures = this.animations.empty;
         break;
       case constants.SLIME:
-        this.textures = textures.slime;
+        this.textures = this.animations.slime;
         break;
       case constants.BEAN:
-        this.textures = textures.bean;
+        this.textures = this.animations.bean;
         break;
       case constants.HOLE:
-        this.textures = textures.hole;
+        this.textures = this.animations.hole;
         break;
     }
   }
 
   guide() {
-    this.textures = textures.guide;
+    this.textures = this.animations.guide;
     this.loop = true;
     this.play();
   }
 
   drop(id) {
     this.textures =
-      id === constants.SLIME ? textures.drop_slime : textures.drop_bean;
+      id === constants.SLIME
+        ? this.animations.drop_slime
+        : this.animations.drop_bean;
     this.loop = false;
-    this.onComplete = function () {
+    this.onComplete = () => {
       this.onComplete = null;
       this.set(id);
     };
@@ -96,9 +105,11 @@ class Tile extends PIXI.AnimatedSprite {
 
   reverse(id) {
     this.textures =
-      id === constants.SLIME ? textures.reverse_slime : textures.reverse_bean;
+      id === constants.SLIME
+        ? this.animations.reverse_slime
+        : this.animations.reverse_bean;
     this.loop = false;
-    this.onComplete = function () {
+    this.onComplete = () => {
       this.onComplete = null;
       this.set(id);
     };
