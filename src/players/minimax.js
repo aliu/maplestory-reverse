@@ -35,7 +35,7 @@ export default {
     // this is actually negamax, but minimax sounds nicer
     const pos = await new Promise((resolve) => {
       worker.onmessage = (event) => resolve(event.data);
-      worker.postMessage({ player, opponent, holes });
+      worker.postMessage({ player, opponent, holes, depth: 5 });
     });
 
     worker.terminate();

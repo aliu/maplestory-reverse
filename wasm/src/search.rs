@@ -1,21 +1,21 @@
-use core::cmp::Ordering;
+use core::cmp;
 
 use crate::board::{Board, Moves};
 
 const INF: i32 = i32::MAX;
 
 pub fn negamax(board: Board, depth: u8) -> Option<u32> {
-    fn search(board: Board, depth: u8) -> i32 {
+    fn search(board: Board, depth: u8, mut alpha: i32, beta: i32) -> i32 {
         let next = board.pass();
         let player = board.moves();
         let opponent = next.moves();
 
-        if player | opponent == 0 {
-            return match bits(player).cmp(&bits(opponent)) {
-                Ordering::Less => -INF,
-                Ordering::Equal => 0,
-                Ordering::Greater => INF,
-            };
+        if player == 0 {
+            if opponent == 0 {
+                return 2048 * (bits(board.player) - bits(board.opponent));
+            } else {
+                return -search(next, depth, -beta, -alpha);
+            }
         }
 
         if depth == 0 {
@@ -28,14 +28,20 @@ pub fn negamax(board: Board, depth: u8) -> Option<u32> {
             return 16 * corners + 4 * mobility + frontier;
         }
 
-        Moves(player)
-            .map(|m| -search(board.play(m), depth - 1))
-            .max()
-            .unwrap_or_else(|| -search(next, depth))
+        let mut best = -INF;
+        for m in Moves(player) {
+            best = cmp::max(best, -search(board.play(m), depth - 1, -beta, -alpha));
+            alpha = cmp::max(alpha, best);
+            if alpha >= beta {
+                break;
+            }
+        }
+
+        best
     }
 
     Moves(board.moves())
-        .max_by_key(|&m| -search(board.play(m), depth))
+        .max_by_key(|&m| -search(board.play(m), depth, -INF, INF))
         .map(|m| m.leading_zeros())
 }
 
