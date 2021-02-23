@@ -1,11 +1,18 @@
+#![no_std]
+
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
-}
+mod board;
+mod search;
+
+use board::Board;
 
 #[wasm_bindgen]
-pub fn test(s: &str) {
-    alert(&format!("It works! {}", s));
+pub fn evaluate(player: u64, opponent: u64, holes: u64, depth: u8) -> Option<u32> {
+    let board = Board {
+        player,
+        opponent,
+        holes,
+    };
+    search::negamax(board, depth)
 }
