@@ -19,6 +19,130 @@ body {
   text-align: center;
 }
 
+/* Volume control */
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-bottom: 0.4em;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.volume-control input[type="range"] {
+  width: 90px;
+  cursor: pointer;
+}
+
+/* Board + win screen overlay */
+
+.board-container {
+  position: relative;
+  width: 334px;
+  height: 335px;
+}
+
+#win-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+#win-screen.hidden {
+  display: none;
+}
+
+.win-box {
+  background: #fff9e6;
+  border: 3px solid #c8940a;
+  border-radius: 10px;
+  padding: 1.5em 2.5em;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+#win-title {
+  font-size: 1.8em;
+  margin: 0 0 0.3em;
+  color: #7c4f00;
+}
+
+#win-score {
+  margin: 0 0 1.2em;
+  color: #333;
+}
+
+#play-again {
+  padding: 0.5em 1.4em;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  background: #c8940a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+#play-again:hover {
+  background: #a37308;
+}
+
+/* HP bars */
+
+.hp-bars {
+  width: 334px;
+  margin-top: 0.5em;
+}
+
+.hp-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.3em;
+}
+
+.hp-label {
+  width: 68px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.hp-track {
+  flex: 1;
+  height: 13px;
+  background: #ddd;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid #bbb;
+}
+
+.hp-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 7px;
+  transition: width 0.25s ease;
+}
+
+.hp-fill.slime {
+  background: linear-gradient(to right, #4ade80, #16a34a);
+}
+
+.hp-fill.bean {
+  background: linear-gradient(to right, #f472b6, #db2777);
+}
+
+.hp-text {
+  width: 42px;
+  text-align: right;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #444;
+}
+
 #info {
   margin: 1em;
 }
