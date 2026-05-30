@@ -19,7 +19,32 @@
           <select id="bean"></select>
         </div>
       </div>
-      <canvas id="board"></canvas>
+      <div class="volume-control">
+        <label for="volume">Vol</label>
+        <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
+      </div>
+      <div class="board-container">
+        <canvas id="board"></canvas>
+        <div id="win-screen" class="hidden">
+          <div class="win-box">
+            <h2 id="win-title"></h2>
+            <p id="win-score"></p>
+            <button id="play-again">Play Again</button>
+          </div>
+        </div>
+      </div>
+      <div class="hp-bars">
+        <div class="hp-bar">
+          <span class="hp-label">Slime</span>
+          <div class="hp-track"><div id="slime-hp-fill" class="hp-fill slime"></div></div>
+          <span id="slime-hp-text" class="hp-text">10000</span>
+        </div>
+        <div class="hp-bar">
+          <span class="hp-label">PinkBean</span>
+          <div class="hp-track"><div id="bean-hp-fill" class="hp-fill bean"></div></div>
+          <span id="bean-hp-text" class="hp-text">10000</span>
+        </div>
+      </div>
       <div id="info"></div>
     </div>
   </body>
