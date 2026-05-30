@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as constants from './constants.js';
 
-const sprites = 'assets/spritesheet.json';
+const sprites = 'assets/ui/spritesheet.json';
 
 function frames(animation, time) {
   return animation.map((texture) => ({ texture, time }));
